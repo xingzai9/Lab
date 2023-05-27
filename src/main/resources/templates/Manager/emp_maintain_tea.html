@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<body>
+	<div class="layui-container layui-col-lg-offset3" style="margin-top:30px ;">
+		<form class="layui-form" action="" lay-filter="tea_info">
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">工号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="tea_num" name="tea_num" class="layui-input">
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="tea_name" name="tea_name" class="layui-input">
+		    </div>
+		  </div>
+		 
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">学院</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="tea_department" name="tea_department" class="layui-input">
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">邮箱号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="e_mail" name="e_mail" class="layui-input">
+		    </div>
+		  </div>
+		  
+		<div class="layui-form-item">
+	    	<label class="layui-form-label">性别</label>
+	    	<div class="layui-input-block">
+    		 <select type="text" name="gender" id="gender" autocomplete="off" placeholder="请选择">
+                <option value="true">男</option>
+                <option value="false">女</option>
+    		</select>
+	    	</div>
+    	</div>
+        	
+		  <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button TYPE="BUTTON" class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+		    </div>
+		  </div>
+		</form>
+	</div>
+</body>
+<script>
+//Demo
+		layui.use(['form','table','layer'], function(){
+			  var form = layui.form;
+			  var table = layui.table;
+			  var layer = layui.layer;
+			  var $ = layui.jquery;
+			  //监听提交
+		  $.getJSON("http://localhost:8080/labManager/getTeacherById",{tea_id:1001},function(d){
+		  	console.log("d是什么",d);
+		  	$("#tea_num").val(d.data.tea_id);
+		  	$("#tea_name").val(d.data.tea_name);
+		  	$("#tea_department").val(d.data.tea_department);
+		  	$("#e_mail").val(d.data.e_mail);
+		  })
+		
+		  form.on('submit(formDemo)',function(data){
+		  	layer.confirm("是否更改？",{icon:3,title:"提示"},function(index){
+
+		  		console.log($("#gender").val());
+				$.get("http://localhost:8080/labManager/updateTeacher",{id:1,tea_name:$("#tea_name").val(),tea_id:$("#tea_num").val(),department:$("#tea_department").val(),gender:$("#gender").val(),e_mail:$("#e_mail").val()},function(d){
+					if(d.status == 0){//成功
+						console.log(d);
+						form.render("input","tea_info");
+						parent.layer.msg("修改成功",{icon:1});
+						layer.close(index);
+					}
+					else{
+						parent.layer.msg(d.msg,{icon:2});
+						console.msg(d.msg);
+						layer.close();
+					}
+				});
+	  			});
+	  			return false;
+		  });
+		});
+</script>
+      

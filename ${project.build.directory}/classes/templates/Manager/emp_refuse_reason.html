@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>更新学生</title>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css">
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        padding: 100px;
+    }
+
+    textarea {
+        width: 500px;
+        height: 200px;
+        border: 1px pink solid;
+        /* 不设置轮廓 */
+        outline: none;
+        /* 设置其不能改变长宽 */
+        resize: none;
+    }
+
+    li {
+        width: 300px;
+        padding: 5px;
+        background-color: #eee;
+        font-size: 15px;
+        margin: 15px 0;
+    }
+
+    li a {
+        float: right;
+    }
+</style>
+
+<body>
+
+<!--<script src="../static/layui/layui.js"></script>-->
+<div class="layui-container" >
+<form class="layui-form">
+    <input type="hidden" id="tea_id" name="tea_id">
+    <input type="hidden" id="trial_name" name="trial_name">
+    <input type="hidden" id="plan_id" name="plan_id">
+    <div class="layui-form-item">
+        <label class="layui-form-label">拒绝原因</label>
+        <div class="layui-input-block">
+            <input type="radio" name="reason" value="实验室已经被占" title="实验室已经被占" >
+            <input type="radio" name="reason" value="实验室正在维修" title="实验室正在维修">
+            <input type="radio" name="reason" value="实验室开放时间更改" title="实验室开放时间更改">
+            <input type="radio" name="reason" value="其他原因" title="其他原因">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注留言</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="text" id="text"></textarea>
+        </div>
+    </div>
+   <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button id="add" type="button" class="layui-btn" lay-submit lay-filter="add">提交</button>
+        </div>
+    </div>
+    
+</form>
+	
+</div>
+<script>
+    //Demo
+    layui.use(['form','laydate','layer'], function(){
+        var form = layui.form;
+		var laydate = layui.laydate;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+//		var txt = document.querySelector("textarea");
+		form.on("submit(add)",function(data){
+            //编辑
+            console.log("add",data)
+            $.getJSON("http://localhost:8080/labManager/refuseReserve",
+                {
+                    plan_id:data.field.plan_id
+                },function(d){
+                    if(d.status == 0) {//成功
+                        $.getJSON("http://localhost:8080/labManager/refuseDetail", data.field, function (d) {
+                            //错误码
+                            console.log("data->", JSON.toString(data.field));
+                            if (d.status == 1) {
+                                layer.msg('出错了，请重新填写');
+                            } else {
+                                parent.layer.msg("发送成功",{icon:1});
+                                //假设这是iframe页
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+//					layer.closeAll('iframe');
+                            }
+                        });
+                        return false;
+                    }
+                    else{
+                        layer.msg('出错了，请重新填写');
+                    }
+                });
+                });
+
+	})
+       
+</script>
+</body>
+</html>

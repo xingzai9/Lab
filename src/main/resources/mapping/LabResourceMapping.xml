@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.LabResourceMapper">
+    <resultMap id="student" type="com.example.labreservesystem.bean.po.Student">
+        <id column="id" property="id"></id>
+        <result column="stu_num" property="stu_num"></result>
+        <result column="stu_name" property="stu_name"></result>
+        <result column="stu_password" property="stu_password"></result>
+        <result column="stu_gender" property="stu_gender"></result>
+    </resultMap>
+    <!--根据学院获取实验室名称-->
+    <select id="getLaboratoryByDepartment" parameterType="java.lang.String" resultType="java.lang.String">
+        select lab_name
+        from labresource_info
+        where belong_department = #{Department} and can_use = true
+    </select>
+    <!--获取全部实验室信息-->
+    <select id="getAllLaboratorys" resultType="com.example.labreservesystem.bean.po.LabResource">
+        select *
+        from labresource_info
+        where can_use = true
+        limit 100
+    </select>
+</mapper>

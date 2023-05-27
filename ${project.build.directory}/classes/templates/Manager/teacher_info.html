@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>学生信息展示</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+
+<script src="../../static/layui/layui.js"></script>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-cyan">
+        <div class="layui-logo layui-hide-xs layui-bg-cyan">实验室管理系统</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left layui-bg-cyan">
+            <!-- 移动端显示 -->
+            <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                <i class="layui-icon layui-icon-spread-left layui-bg-cyan"></i>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan layui-this"><a th:href="@{/labManager/toTeaInfo}">查看教师信息</a></li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan "><a th:href="@{/labManager/toStuInfo}">查看学生信息</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan "><a th:href="@{/labManager/toReserveAudit}">预约管理</a></li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan "><a href="#" th:href="@{/labManager/toLabInfo}">实验室管理</a>
+                <span class="layui-nav-bar"></span></ul>
+        <ul class="layui-nav layui-layout-right layui-bg-cyan">
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;">
+                    实验室管理员
+                    <i class="layui-icon layui-nav-more"></i>
+                </a>
+            </li>
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+
+                <a href="javascript:;" th:href="@{/logout}">
+                    退出
+                    <i class="layui-icon layui-icon-down layui-nav-more"></i>
+                </a>
+
+            </li>
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect="">
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-more-vertical"></i>
+                </a>
+            </li>
+            <span class="layui-nav-bar" style="left: 165.913px; width: 0px; opacity: 0; top: 56px;"></span></ul>
+    </div>
+
+    <div class="layui-side layui-bg-green">
+        <div class="layui-side-scroll layui-bg-green">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-bg-green" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a location.href="#" th:href="@{/excel/toImportTeacher}">批量导入老师</a>
+                </li>
+                <li class="layui-nav-item"><a href="#" th:href="@{/admin/booking/bookingTimeInfo}"></a></li>
+                <span class="layui-nav-bar"></span></ul>
+        </div>
+    </div>
+
+    <div class="layui-body"  >
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend align="center">教师信息</legend>
+        </fieldset>
+        <div class="layui-main" style="margin-top: 40px;">
+            <div class="layui-container layui-col-md">
+
+                <table id="teacher_info" lay-filter="tea_info"></table>
+                <button id = "addTeacher" type="button" class="layui-btn layui-btn-normal layui-btn-fluid" >添加学生</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!--学生信息-->
+
+<script>
+    layui.use(['table','layer','form'], function(){
+        var table = layui.table;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        table.on('tool(tea_info)',function(obj){
+
+            if(obj.event == 'del'){
+                //删除
+                layer.confirm("是否删除？",{icon:3,title:"提示"},function(index){
+//					console.log("tea_id",obj.data);
+                    $.getJSON("http://localhost:8080/labManager/deleteTeacherById",{tea_id:obj.data.tea_id},function(d){
+                        if(d.status == 0){//成功
+//							console.log("d-->",JSON.stringify(d));
+                            obj.del();
+                            layer.msg('删除成功', { icon: 1, title: '提示',time:1000 })
+                            layer.close(index);
+                        }
+                        else{
+                            layer.msg('删除失败', { icon: 2, title: '提示' })
+                        }
+                    });
+                });
+            }
+            else if(obj.event == 'edit'){
+                //编辑
+                layer.open({
+                    type:2,
+                    title:'更新教师信息',
+                    content:"/labManager/toUpdateTea",
+                    area:["500px","400px"],
+                    closeBtn:2,
+                    shade:0.1,
+                    end: function(){
+                        table.reload("showTeacher");
+                    },
+                    success: function(layero, index){
+                        console.log("obj-》》",obj.data);
+
+                        var body = layer.getChildFrame('body',index);
+                        var setTime = setTimeout(function () {}, 1000);
+                        body.find("#tea_name").val(obj.data.tea_name);
+                        body.find("#tea_id").val(obj.data.tea_id);
+                        body.find("#e_mail").val(obj.data.e_mail);
+                        body.find("#id").val(obj.data.id);
+                        body.find("#tea_dept").val(obj.data.tea_department);
+                        body.find("input[name='gender'][value=true]").attr("checked",obj.data.tea_gender==true?true:false);
+                        body.find("input[name='gender'][value=false]").attr("checked",obj.data.tea_gender==false?true:false);
+                        //部门回显
+
+                    }
+                })
+            }
+            else{
+
+            }
+        });
+        $("#addTeacher").click(function(){
+            layer.open({
+                type:2,
+                title:'添加教师',
+                content:"/labManager/toAddTea",
+                area:["500px","400px"],
+                closeBtn:2,
+                shade:0.1,
+                end: function(){
+                    table.reload("tea_info");
+                }
+            })
+        })
+
+        //第一个实例
+        table.render({
+            elem: '#teacher_info'
+            ,id: 'showTeacher'
+            // ,height: 312
+            ,url: 'http://localhost:8080/labManager/toTeacherInfo' //数据接口
+            ,request:{
+                pageName:'pageNo',
+                limitName:'pageSize'
+            }
+            ,parseData: function(res){ //res 即为原始返回的数据
+//   	console.log("res--->",res);
+                return {
+                    "code": res.status, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.msg, //解析数据长度
+                    "data": res.data //解析数据列表
+                };
+            }
+            ,page: true //开启分页
+            ,limit:6
+            ,limits:[2,4,6]
+            ,cols: [
+                [ //表头
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        sort: true,
+                        fixed: 'center',
+                        width:'10%',
+                        align: "center"
+                    }
+                    ,{
+                        field: 'tea_name',
+                        title: '姓名',
+                        sort: false,
+                        fixed: 'center',
+                        width:'15%',
+                        align: "center"
+                    }
+                    ,{
+                        field: 'tea_id',
+                        title: '工号',
+                        sort: true ,
+                        fixed: 'center',
+                        width:'15%',
+                        align: "center"
+                }
+                    ,{
+                        title: '性别',
+                        sort: true,
+                        fixed: 'center',
+                        width:'10%',
+                        align: "center",
+                        templet:function(d){
+                            return d.tea_gender == true?"男":"女";
+                        }
+                    }
+                    ,{
+                        field: 'tea_department',
+                        title: '学院',
+                        sort: false ,
+                        fixed: 'center',
+                        width:'15%',
+                        align: "center"
+                }
+
+                    ,{
+                        field: 'e_mail',
+                        title: '邮箱',
+                        sort: true ,
+                        fixed: 'center',
+                        width:'15%',
+                        align: "center"
+                }
+                    ,{
+                        title:"操作",
+                        templet:function(){
+                            var str = "<button type=\"button\" class=\"layui-btn layui-btn-sm layui-btn-danger\" lay-event='del'>删除</button>";
+                            str += "<button type=\"button\" class=\"layui-btn layui-btn-sm layui-btn-warm\" lay-event='edit'>编辑</button>";
+                            return str;
+                        },
+                        fixed: 'center',
+                        width:'21%',
+                        align: "center"
+                }
+
+                ]
+            ]
+        });
+
+    });
+</script>
+
+</body>
+</html>

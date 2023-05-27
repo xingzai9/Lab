@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.LabManagerMapper">
+    <resultMap id="LabManager" type="com.example.labreservesystem.bean.po.LabManager">
+        <id column="manager_id" property="manager_id"/>
+        <result column="manager_password" property="manager_password"/>
+        <result column="e_mail" property="e_mail"/>
+    </resultMap>
+<!--    管理员检查是否有相同存在-->
+    <select id="getReserveEnsureSame" parameterType="com.example.labreservesystem.bean.po.ReserveEnsure" resultType="com.example.labreservesystem.bean.po.ReserveEnsure">
+        select * from reservelab_ensure where department = #{reserveEnsure.department}
+        and laboratory = #{reserveEnsure.laboratory}
+        and week = #{reserveEnsure.week} and day = #{reserveEnsure.day} and course = #{reserveEnsure.course}
+    </select>
+    <!--管理员获取信息-->
+    <select id="getManagerByNum" parameterType="String" resultMap="LabManager">
+        select *
+        from labmanager_info
+        where manager_id = #{manager_id}
+        limit 1;
+    </select>
+    <!--管理员查看待处理预约信息-->
+    <select id="getReservePlan" parameterType="map" resultType="com.example.labreservesystem.bean.po.ReservePlan">
+        select *
+        from reservelab_plan
+        where is_refused = 0
+        limit #{startIndex},#{pageSize}
+    </select>
+    <!--获取全部待处理信息条数-->
+    <select id="getReservePlanCount" resultType="java.lang.Integer">
+        select count(*)
+        from reservelab_plan
+        where is_refused = 0
+    </select>
+    <!--删除预约信息-->
+    <delete id="deleteById" parameterType="Integer">
+        delete from reservelab_plan
+        where plan_id = #{plan_id}
+    </delete>
+    <!--根据plan_id获取信息-->
+    <select id="getPlanById" parameterType="Integer" resultType="com.example.labreservesystem.bean.po.ReservePlan">
+        select *
+        from reservelab_plan
+        where plan_id = #{plan_id}
+    </select>
+    <!--插入最终预约信息表-->
+    <insert id="addEnsureReserve" parameterType="com.example.labreservesystem.bean.po.ReserveEnsure" >
+        insert into reservelab_ensure
+        values (null,
+                #{reserveEnsure.week},
+                #{reserveEnsure.day},
+                #{reserveEnsure.course},
+                #{reserveEnsure.laboratory},
+                #{reserveEnsure.trial_num},
+                #{reserveEnsure.trial_id},
+                #{reserveEnsure.trial_name},
+                #{reserveEnsure.reserve_tea_id},
+                #{reserveEnsure.department},
+                #{reserveEnsure.operate_time}
+                )
+    </insert>
+    <!--更新预约计划表设置是否接受为1-->
+    <update id="setIsRefused" parameterType="Integer" >
+        update reservelab_plan
+        set is_refused = 1
+        where plan_id = #{plan_id}
+    </update>
+    <!--插入拒绝原因以及留言-->
+    <insert id="addRefuse" parameterType="com.example.labreservesystem.bean.po.Message">
+        insert into message
+        values(null,
+               #{message.reason},
+               #{message.text},
+               #{message.to_teacher_id},
+               #{message.manager_id},
+               #{message.trial_name},
+               #{message.isRead},
+               #{message.send_time}
+              )
+    </insert>
+    <!--根据学院获取预约信息-->
+    <select id="getReserveByDepartment" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.ReserveEnsure">
+        select *
+        from reservelab_ensure
+        where department = #{pageUtils.data}
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+    <!--获取全部预约信息数量-->
+    <select id="getReserveEnsureCount" resultType="Integer">
+        select count(*)
+        from reservelab_ensure
+    </select>
+
+    <!--获取全部预约信息-->
+    <select id="getReserveEnsure" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.ReserveEnsure">
+        select *
+        from reservelab_ensure
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+
+    <!--删除确定的预约信息-->
+    <delete id="deleteEnsureById" parameterType="String">
+        delete from reservelab_ensure
+        where ensure_id = #{ensure_id}
+    </delete>
+
+    <!--获取实验室信息-->
+    <select id="getLabInfo" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.LabResource">
+        select * from labresource_info
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+
+    <!--获取实验室信息数量-->
+    <select id="getLabInfoCount"  resultType="Integer">
+        select count(*) from labresource_info
+    </select>
+
+    <!--更新实验室状态数量-->
+    <update id="changeState" parameterType="com.example.labreservesystem.bean.po.LabResource">
+        update labresource_info set can_use = #{labResource.can_use} where lab_id = #{labResource.lab_id}
+    </update>
+
+    <!--更新实验室信息-->
+    <update id="updateLab" parameterType="com.example.labreservesystem.bean.po.LabResource">
+        update labresource_info set seat_num = #{labResource.seat_num},
+                                    lab_name = #{labResource.lab_name},
+                                    belong_department = #{labResource.belong_department},
+                                    lab_manager_id = #{labResource.lab_manager_id}
+        where lab_id = #{labResource.lab_id}
+    </update>
+
+    <!--添加新的实验室-->
+    <insert id="addLab" parameterType="com.example.labreservesystem.bean.po.LabResource">
+        insert into labresource_info values (null, #{labResource.seat_num},#{labResource.lab_name},
+                                             #{labResource.belong_department},#{labResource.lab_manager_id},
+                                             #{labResource.can_use})
+    </insert>
+    <!--获取管理员用户-->
+    <select id="getLabManagerList" resultType="com.example.labreservesystem.bean.po.LabManager">
+        select * from labmanager_info
+    </select>
+</mapper>

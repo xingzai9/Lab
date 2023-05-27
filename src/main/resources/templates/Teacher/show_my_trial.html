@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+    <style type="text/css">
+        th {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+        }
+
+        td {
+            width: 50px;
+            height: 30px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-cyan">
+        <div class="layui-logo layui-hide-xs layui-bg-cyan">实验室管理系统</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left layui-bg-cyan">
+            <!-- 移动端显示 -->
+            <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                <i class="layui-icon layui-icon-spread-left layui-bg-cyan"></i>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan ">
+                <a href="#" th:href="@{/tea/toModifyInfo}">个人信息</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan ">
+                <a href="#" th:href="@{/tea/toMyStudent}">我的学生</a>
+            </li>
+            <li class="layui-nav-item layui-this">
+                <a  href="#" th:href="@{/tea/toReserve}">预约实验</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="#" th:href="@{/tea/toReserve}">初步预约信息</a></dd>
+                    <dd><a href="#" th:href="@{/tea/toReserveDetail}">具体时间选择</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan">
+                <a href="#" th:href="@{/tea/toMyMessage}">我的通知</a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right layui-bg-cyan">
+            <li  id="username" class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <!--                <a id="username" href="javascript:;" th:href="@{/stu/toModifyInfo}"></a>-->
+            </li>
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;" th:href="@{/logout}">
+                    退出
+                    <i class="layui-icon layui-icon-down layui-nav-more"></i></a>
+                <dl class="layui-nav-child layui-anim layui-anim-upbit">
+                    <dd><a href="">Your Profile</a></dd>
+                    <dd><a href="">Settings</a></dd>
+                    <dd><a href="">Sign out</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect="">
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-more-vertical"></i>
+                </a>
+            </li>
+            <span class="layui-nav-bar" style="left: 165.913px; width: 0px; opacity: 0; top: 56px;"></span></ul>
+    </div>
+
+    <div class="layui-side layui-bg-green">
+        <div class="layui-side-scroll layui-bg-green">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-bg-green" lay-filter="test">
+                <li class="layui-nav-item">
+                    <dd><a href="#" th:href="@{/tea/toReserveRecord}">预约历史记录</a></dd>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="#" th:href="@{/tea/toMyTrial}">我的实验课程</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="#" th:href="@{/tea/toLookTeaReserve}">查看我的预约</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="#" th:href="@{/tea/toLookStuReserve}">查看学生预约</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="#" th:href="@{/tea/toMostValueReserve}">求取最佳预约</a>
+                </li>
+                <span class="layui-nav-bar"></span></ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+              <legend align="center">我的实验</legend>
+            </fieldset>
+        <div class="layui-row ">
+
+            <div class="layui-row ">
+                <div class="layui-main" style="margin-top: 40px;">
+                    <div id="table" class="layui-container ">
+                        <table class="layui-table " id="showMyReserveRecord" lay-filter="showMyReserveRecord"></table>
+                        <!--                    <button id = "Cross" type="button" lay-filter='Cross' class="layui-btn layui-btn-normal layui-btn-fluid">求取交集</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--课程表-->
+<script>
+    layui.use(['table','layer','form'], function(){
+        var table = layui.table;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        $.getJSON("http://localhost:8080/tea/getSession",function(d){
+            console.log("session"+d.data)
+            var username = d.data
+            var str = "<a href='/tea/toModifyInfo' >欢迎教师用户" + username + "</a>";
+            $('#username').html(str);
+        })
+        table.on('tool(showMyReserveRecord)',function(obj){
+            console.log("obj->showMyReserveRecord"+obj);
+            if(obj.event == 'del'){
+                //删除
+                layer.confirm("是否删除？",{icon:3,title:"提示"},function(index){
+
+                    $.get("http://localhost:8080/tea/deleteMyTrial",
+                        {
+                            tea_id:obj.data.tea_id,
+                            semester:obj.data.semester,
+                            trial_name:obj.data.trial_name
+                        },
+                        function(d){
+                            if(d.status == 0){//成功
+                                obj.del();
+                                layer.msg("成功删除")
+                                layer.close(index);
+                            }
+                            else{
+                                layer.msg("fail")
+                                layer.close(index);
+                            }
+                        });
+                });
+            }
+
+            else{
+
+            }
+        });
+
+        //第一个实例
+        table.render({
+            elem: '#showMyReserveRecord'
+            ,id: 'showMyReserveRecord'
+            ,url: 'http://localhost:8080/tea/getMyTrial' //数据接口
+            ,request:{
+                pageName:'pageNo',
+                limitName:'pageSize',
+            }
+            ,parseData: function(res){ //res 即为原始返回的数据
+                console.log("res->getMytrial",res);
+                return {
+                    "code": res.status, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.msg, //解析数据长度
+                    "data": res.data //解析数据列表
+                };
+            }
+            ,page: true //开启分页
+            ,limit:6
+            ,limits:[2,4,6]
+            ,cols: [
+                [ //表头
+                    {
+                        field: 'LAY_TABLE_INDEX',
+                        title: 'ID',
+                        sort: true,
+                        fixed: 'center',
+                        width:'15%',
+                        align: "center"
+                    },
+                    {
+                        field: 'semester',
+                        title: '学期',
+                        sort: false,
+                        fixed: 'center',
+                        width:'25%',
+                        align: "center"
+                    }
+                    ,{
+                    field: 'trial_name',
+                    title: '实验名称',
+                    sort: false,
+                    fixed: 'center',
+                    width:'30%',
+                    align: "center"
+                }
+                    ,{
+                    title:"操作",
+                    align:'center',
+                    templet:function(){
+                        var str = "<button type=\"button\" class=\"layui-btn layui-btn-sm layui-btn-danger\" lay-event='del'>删除</button>";
+                        // str += "<button type=\"button\" class=\"layui-btn layui-btn-sm layui-btn-warm\" lay-event='edit'>编辑</button>";
+                        return str;
+                    },
+                    width:'31%',
+                    align: "center"
+                }
+                ]
+            ]
+        });
+
+    });
+</script>
+
+
+</body>
+</html>

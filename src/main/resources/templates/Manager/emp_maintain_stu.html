@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<body>
+	<div class="layui-container layui-col-lg-offset3" style="margin-top:60px ;">
+		<form class="layui-form">
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">学号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="stu_num" name="stu_num" class="layui-input">
+		    </div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="stu_name" name="stu_name" class="layui-input">
+		    </div>
+		  </div>
+		 
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">学院</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="stu_department" name="stu_department" class="layui-input">
+		    </div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">班级</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="stu_class" name="stu_class" class="layui-input">
+		    </div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">邮箱号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="e_mail" name="e_mail" class="layui-input">
+		    </div>
+		  </div>
+		  
+		   	<div class="layui-form-item">
+		    	<label class="layui-form-label">性别</label>
+		    	<div class="layui-input-block">
+	    		 <select type="text" name="gender" id="gender" autocomplete="off" placeholder="请选择">
+	                <option value="true">男</option>
+	                <option value="false">女</option>
+        		</select>
+		    	</div>
+        	</div>
+        	
+		  <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button id="submit" type="button" class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+		    </div>
+		  </div>
+		  
+		</form>
+	 </div>
+</body>
+<script>
+//Demo
+		layui.use(['form','table','layer'], function(){
+			  var form = layui.form;
+			  var table = layui.table;
+			  var layer = layui.layer;
+			  var $ = layui.jquery;
+			  //监听提交
+		  $.getJSON("http://localhost:8080/labManager/getStudentById",{stu_num:101},function(d){
+		  	
+		  	$("#stu_num").val(d.data.stu_num);
+		  	$("#stu_name").val(d.data.stu_name);
+		  	$("#stu_department").val(d.data.stu_department);
+		  	$("#e_mail").val(d.data.e_mail);
+		  	$("#stu_class").val(d.data.stu_class);
+		  })
+		
+		  form.on('submit(formDemo)',function(data){
+		  	layer.confirm("是否更改？",{icon:3,title:"提示"},function(index){
+
+		  		console.log($("#stu_name").val());
+				$.getJSON("http://localhost:8080/labManager/updateStudent",{id:4,stu_name:$("#stu_name").val(),stu_num:$("#stu_num").val(),stu_class:$("#stu_class").val(),department:$("#stu_department").val(),gender:$("#gender").val(),e_mail:$("#e_mail").val()},function(d){
+					if(d.status == 0){//成功
+						parent.layer.msg("修改成功",{icon:1});
+						layer.close(index);
+					}
+					else{
+						console.log(d.msg);
+						parent.layer.msg(d.msg,{icon:2});
+						layer.close(index);
+					}
+					});
+	  			});
+		  	});
+		});
+</script>
+      

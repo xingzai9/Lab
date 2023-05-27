@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.BookingMapper">
+
+    <resultMap id="ReserveByTea" type="com.example.labreservesystem.bean.po.ReserveByTea">
+        <!--主键的映射关系 column:列名（数据库列名） property:属性名（与实体类类名一致）-->
+        <id column="tea_reserve_record_id" property="id"/>
+        <!--普通列的映射关系-->
+        <result column="is_passed" property="isPassed"/>
+        <result column="department" property="department"/>
+        <result column="laboratory" property="laboratory"/>
+        <result column="tea_id" property="teaId"/>
+        <result column="class_time" property="classTime"/>
+        <result column="trial_name" property="trialName"/>
+        <result column="trial_num" property="trialNum"/>
+        <result column="trial_times" property="trialTimes"/>
+        <result column="week" property="week"/>
+        <result column="day" property="day"/>
+        <result column="course" property="course"/>
+    </resultMap>
+
+    <select id="getAllDepartment" resultType="com.example.labreservesystem.bean.po.Department">
+        select *
+        from department
+    </select>
+
+    <!--插入教师初步预约信息-->
+    <insert id="addReserveByTea" parameterType="com.example.labreservesystem.bean.po.ReserveByTea">
+        insert into reserve_bytea
+        values(null,
+               #{reserveByTea.is_passed},
+               #{reserveByTea.department},
+               #{reserveByTea.laboratory},
+               #{reserveByTea.tea_id},
+               #{reserveByTea.class_time},
+               #{reserveByTea.trial_name},
+               #{reserveByTea.trial_num},
+               #{reserveByTea.trial_times},
+               #{reserveByTea.week},
+               #{reserveByTea.day},
+               #{reserveByTea.course})
+    </insert>
+    <!--获取教师预约初步信息-->
+    <select id="getReserveByTea" parameterType="String" resultType="com.example.labreservesystem.bean.po.ReserveByTea">
+        select *
+        from reserve_bytea
+        where is_passed = false and
+              tea_id = #{tea_id}
+        limit 1
+    </select>
+
+    <!--获取教师初步预约详细信息-->
+    <!--获取教师预约初步信息-->
+    <select id="getReserveByTeaList" parameterType="com.example.labreservesystem.bean.po.ReserveByTea" resultType="com.example.labreservesystem.bean.po.ReserveByTea">
+        select *
+        from reserve_bytea
+        where is_passed = true
+          and tea_id = #{reserveByTea.tea_id}
+          and department = #{reserveByTea.department}
+          and laboratory = #{reserveByTea.laboratory}
+          and class_time = #{reserveByTea.class_time}
+          and trial_name = #{reserveByTea.trial_name}
+          and trial_num = #{reserveByTea.trial_num}
+          and trial_times = #{reserveByTea.trial_times}
+    </select>
+    <!--获取学期数-->
+    <select id="getSemester" parameterType="String" resultType="com.example.labreservesystem.bean.po.Semester">
+        select *
+        from semester
+        where semester_name = #{semester_name}
+        limit 1
+    </select>
+
+    <!--删除暂存数据-->
+    <delete id="deleteReserveTemporary" parameterType="String">
+        delete from
+        reserve_bytea
+        where tea_id = #{tea_id}
+        and is_passed = false
+    </delete>
+
+    <!--学生预约信息加入-->
+    <insert id="addReserveByStu" parameterType="com.example.labreservesystem.bean.po.ReserveByStu">
+        insert into reserve_bystu
+        values (null,
+                #{reserveByStu.stu_num},
+                #{reserveByStu.tea_id},
+                #{reserveByStu.week},
+                #{reserveByStu.day},
+                #{reserveByStu.course},
+                #{reserveByStu.department},
+                #{reserveByStu.trial_name},
+                #{reserveByStu.laboratory})
+    </insert>
+<!--同一个学生对同一个老师的同一门课-->
+    <select id="getReserveByStuSame" parameterType="com.example.labreservesystem.bean.po.ReserveByStu" resultType="com.example.labreservesystem.bean.po.ReserveByStu">
+        select * from reserve_bystu where stu_num = #{reserveByStu.stu_num}
+                                    and tea_id = #{reserveByStu.tea_id}
+                                    and trial_name = #{reserveByStu.trial_name}
+                                    and week = #{reserveByStu.week}
+                                    and day = #{reserveByStu.day}
+                                    and course = #{reserveByStu.course}
+    </select>
+
+    <!--获取教师信息和实验信息-->
+    <select id="getTeaAndReserve" parameterType="com.example.labreservesystem.bean.po.StuAndTea" resultType="com.example.labreservesystem.bean.vo.TeaAndReserve">
+        select ti.tea_id,any_value(tea_name),any_value(e_mail),trial_name,any_value(department),laboratory
+        from teacher_info ti
+                 left join reserve_bytea rb on
+            ti.tea_id = rb.tea_id
+        where ti.tea_id = #{stuAndTea.tea_id}
+          and trial_name = #{stuAndTea.trial_name}
+        group by ti.tea_id,trial_name,laboratory
+    </select>
+
+
+    <!--根据学生学号、教师工号、课程来选出每门课的最多人选择时间-->
+    <select id="getMostChoose" parameterType="com.example.labreservesystem.bean.vo.StuTeaCourse" resultType="com.example.labreservesystem.bean.vo.WeekDayCourse">
+        select count(*) as number,week,day,course
+        from reserve_bystu
+        where tea_id = #{stuTeaCourse.tea_id} and trial_name = #{stuTeaCourse.trial_name}
+        group by week,day,course
+        order by number desc
+    </select>
+</mapper>

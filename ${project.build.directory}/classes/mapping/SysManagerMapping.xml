@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.SysManagerMapper">
+    <resultMap id="student" type="com.example.labreservesystem.bean.po.Student">
+        <id column="id" property="id"></id>
+        <result column="stu_num" property="stu_num"></result>
+        <result column="stu_name" property="stu_name"></result>
+        <result column="stu_password" property="stu_password"></result>
+        <result column="stu_gender" property="stu_gender"></result>
+    </resultMap>
+    <select id="getStudentByNum" parameterType="java.lang.String" resultType="com.example.labreservesystem.bean.po.Student">
+        select *
+        from student_info
+        where stu_num = #{stu_num}
+    </select>
+    <!--获取所有实验室管理员信息-->
+    <select id="getLabManagerList" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.LabManager">
+        select * from labmanager_info
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+    <!--获取数量-->
+    <select id="getLabManagerListCount" resultType="Integer">
+        select count(*) from labmanager_info
+    </select>
+    <!--删除实验室管理员-->
+    <delete id="deleteLabManagerById" parameterType="String">
+        delete from labmanager_info where manager_id = #{manager_id}
+    </delete>
+
+    <!--学院-->
+    <select id="getDepartmentList" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.Department">
+        select *
+        from department
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+    <select id="getDepartmentListCount" resultType="Integer">
+        select count(*)
+        from department
+    </select>
+    <delete id="deleteDepartmentById" parameterType="String">
+        delete from department where dept_id = #{dept_id}
+    </delete>
+    <update id="updateDepartment" parameterType="com.example.labreservesystem.bean.po.Department">
+        update department set dept_name = #{department.dept_name},
+                              dept_stu_num = #{department.dept_stu_num},
+                              dept_tea_num = #{department.dept_tea_num}
+        where dept_id = #{department.id}
+    </update>
+    <insert id="addDepartment" parameterType="com.example.labreservesystem.bean.po.Department">
+        insert into department values (null,#{department.dept_name},#{department.dept_stu_num},#{department.dept_tea_num})
+    </insert>
+    <!--学期-->
+    <select id="getSemester" resultType="com.example.labreservesystem.bean.po.Semester">
+        select * from semester order by start_date desc limit 1
+    </select>
+    <update id="updateSemester" parameterType="com.example.labreservesystem.bean.po.Semester">
+        update semester set semester_name = #{semester.semester_name},
+                            start_date = #{semester.start_date},
+                            start_weekday = #{semester.start_weekday},
+                            week_num = #{semester.week_num}
+        where semester_id = #{semester.semester_id}
+    </update>
+    <delete id="deleteSemesterById" parameterType="String">
+        delete from semester where semester_id = #{semester_id}
+    </delete>
+</mapper>

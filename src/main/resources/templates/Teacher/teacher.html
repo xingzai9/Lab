@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<body>
+
+<table id="demo" lay-filter="test"></table>
+ 
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+    <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    <button class="layui-btn layui-btn-sm" lay-event="update">编辑</button>
+  </div>
+</script>
+ 
+<script>
+//JS 调用：
+    layui.use(['table'],function(){
+    	var table = layui.table;
+    	table.render({
+		  elem: '#demo'
+		  ,toolbar: '#toolbarDemo'
+		  
+		  //,…… //其他参数
+		});
+		 
+		//触发事件
+		table.on('toolbar(test)', function(obj){
+		  var checkStatus = table.checkStatus(obj.config.id);
+		  switch(obj.event){
+		    case 'add':
+		      layer.msg('添加');
+		    break;
+		    case 'delete':
+		      layer.msg('删除');
+		    break;
+		    case 'update':
+		      layer.msg('编辑');
+		    break;
+		  };
+		});
+    })
+		
+</script>
+</body>
+</html>

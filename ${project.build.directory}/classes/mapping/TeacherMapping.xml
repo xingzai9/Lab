@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.TeacherMapper">
+
+    <select id="getTeacherById" parameterType="java.lang.String" resultType="com.example.labreservesystem.bean.po.Teacher">
+        select *
+        from teacher_info
+        where tea_id = #{tea_id}
+        limit 1
+    </select>
+    <select id="getTeacherCount" resultType="int">
+        select count(*)
+        from teacher_info
+    </select>
+    <insert id="addTeacher" parameterType="com.example.labreservesystem.bean.po.Teacher">
+        insert into teacher_info(id,tea_id, tea_name, tea_password, tea_gender,tea_department,e_mail)
+        values(null,#{teacher.tea_id},#{teacher.tea_name},#{teacher.tea_password},#{teacher.tea_gender},#{teacher.tea_department},#{teacher.e_mail})
+    </insert>
+    <select id="getAllTeacher" parameterType="map" resultType="com.example.labreservesystem.bean.po.Teacher">
+        select *
+        from teacher_info
+        limit #{startIndex},#{pageSize}
+    </select>
+    <delete id="deleteTeacher" parameterType="com.example.labreservesystem.bean.po.Teacher">
+        delete from teacher_info
+where tea_id = #{teacher.tea_id}
+and tea_name = #{teacher.tea_name}
+    </delete>
+
+    <delete id="deleteTeacherById" parameterType="String">
+        delete from teacher_info
+where tea_id = #{tea_id}
+    </delete>
+
+    <update id="updateTeacher" parameterType="com.example.labreservesystem.bean.po.Teacher">
+        update teacher_info
+        set
+            tea_name = #{teacher.tea_name},
+            tea_gender = #{teacher.tea_gender},
+            tea_department = #{teacher.tea_department},
+            e_mail = #{teacher.e_mail}
+        where tea_id = #{teacher.tea_id}
+    </update>
+
+    <!--获取教师临时预约-->
+    <select id="getReserveByTea" parameterType="com.example.labreservesystem.bean.po.StuAndTea" resultType="com.example.labreservesystem.bean.po.ReserveByTea">
+        select *
+        from reserve_bytea
+        where is_passed = true
+          and tea_id = #{stuAndTea.tea_id}
+          and trial_name = #{stuAndTea.trial_name}
+    </select>
+
+    <!--获取全部教师拟预约-->
+    <select id="getAllReserveByTea" resultType="com.example.labreservesystem.bean.po.ReserveByTea">
+        select *
+        from reserve_bytea
+        where is_passed = true
+    </select>
+
+    <!--获取我的预约记录-->
+    <select id="getReserveRecordById" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.ReserveEnsure">
+        select * from reservelab_ensure
+        where reserve_tea_id = #{pageUtils.data}
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+<!--获取教师预约数量-->
+    <select id="getReserveRecordByIdCount" parameterType="String" resultType="Integer">
+        select count(*) from reservelab_ensure
+        where reserve_tea_id = #{tea_id}
+    </select>
+    <!--删除自身预约信息-->
+    <delete id="deleteReserveRecordById" parameterType="String" >
+        delete from reservelab_ensure where ensure_id = #{ensure_id}
+    </delete>
+
+    <!--获取我的学生信息-->
+    <select id="getMyStudent" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.Student">
+        select * from student_info left join stu_tea_semester sts on student_info.stu_num = sts.stu_num
+        where tea_id = #{pageUtils.data.tea_id}
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+
+    <select id="getMyStudentCount" parameterType="String" resultType="Integer">
+        select count(*) from student_info left join stu_tea_semester sts on student_info.stu_num = sts.stu_num
+        where tea_id = #{tea_id}
+    </select>
+    <!--删除我的学生-->
+    <delete id="deleteMyStudent" parameterType="com.example.labreservesystem.bean.vo.StuTeaCourse">
+        delete from stu_tea_semester where tea_id = #{stuTeaCourse.tea_id}
+                                       and trial_name = #{stuTeaCourse.trial_name}
+                                       and stu_num = #{stuTeaCourse.stu_num}
+    </delete>
+    <!--获取我的课程-->
+    <select id="getMyTrial" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.TeaStuSemester">
+        select * from stu_tea_semester where tea_id = #{pageUtils.data}
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+    <!--获取我的全部实验-->
+    <select id="getAllTrial" parameterType="String" resultType="String">
+        select distinct trial_name from stu_tea_semester where tea_id = #{tea_id}
+    </select>
+<!--获取教师预约实验名-->
+    <select id="getTrialNameList" parameterType="String" resultType="String">
+        select distinct trial_name from reserve_bytea where tea_id = #{tea_id}
+    </select>
+    <select id="getMyTrialCount" parameterType="String" resultType="Integer">
+        select count(*) from stu_tea_semester where tea_id = #{tea_id}
+    </select>
+    <!--删除我的课程-->
+    <delete id="deleteMyTrial" parameterType="com.example.labreservesystem.bean.po.TeaStuSemester">
+        delete from stu_tea_semester where semester = #{teaStuSemester.semester} and trial_name = #{teaStuSemester.trial_name}
+        and tea_id = #{teaStuSemester.tea_id}
+    </delete>
+
+    <!--删除我的预约计划-->
+    <delete id="deleteMyReservePlan" parameterType="com.example.labreservesystem.bean.po.ReserveByTea">
+        delete from reserve_bytea where trial_name  = #{reserveByTea.trial_name}
+        and tea_id = #{reserveByTea.tea_id} and week = #{reserveByTea.week}
+        and day = #{reserveByTea.day} and course = #{reserveByTea.course}
+        and is_passed = true
+    </delete>
+
+    <!--增加预约计划-->
+    <insert id="addReservePlan" parameterType="com.example.labreservesystem.bean.po.ReservePlan">
+        insert into reservelab_plan values
+        (null,
+            #{reservePlan.reserve_week},
+            #{reservePlan.reserve_day},
+            #{reservePlan.reserve_course},
+            #{reservePlan.trial_num},
+            #{reservePlan.trial_name},
+            #{reservePlan.trial_id},
+            false,
+            #{reservePlan.class_time},
+            #{reservePlan.reserve_tea_id},
+            #{reservePlan.laboratory},
+            #{reservePlan.department}
+        )
+    </insert>
+
+    <!--获取教师预约计划-->
+    <select id="getReserveByTeaById" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.ReserveByTea">
+        select * from reserve_bytea
+        where tea_id = #{pageUtils.data}
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+
+    <!--获取教师预约计划数-->
+    <select id="getReserveByTeaByIdCount" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="Integer">
+        select count(*) from reserve_bytea
+        where tea_id = #{pageUtils.data}
+    </select>
+
+    <!--根据id删除教师预约中信息-->
+    <delete id="deleteReserveByTeaById" parameterType="String">
+        delete from reserve_bytea where tea_reserve_record_id = #{reserveByTea_id}
+    </delete>
+
+    <!--获取我的信息-->
+    <select id="getMyMessage" parameterType="com.example.labreservesystem.bean.vo.PageUtils" resultType="com.example.labreservesystem.bean.po.Message">
+        select * from message where to_teacher_id = #{pageUtils.data}
+        order by send_time desc
+        limit #{pageUtils.startIndex},#{pageUtils.pageSize}
+    </select>
+
+    <select id="getMyMessageCount" parameterType="String" resultType="Integer">
+        select count(*) from message where to_teacher_id = #{tea_id}
+    </select>
+
+    <!--更新状态-->
+    <update id="changeIsRead" parameterType="String">
+        update message set isRead = true
+        where to_teacher_id = #{tea_id}
+    </update>
+
+    <!--删除消息-->
+    <delete id="deleteMessage" parameterType="Integer" >
+        delete from message where id = #{message_id}
+    </delete>
+
+    <select id="getRecommendLaboratory" parameterType="com.example.labreservesystem.bean.po.ReserveEnsure" resultType="com.example.labreservesystem.bean.po.LabResource">
+        select * from labresource_info
+        where lab_name not in (
+            select re.laboratory from labresource_info as li
+                right join reservelab_ensure as re on li.lab_name = re.laboratory
+                where re.department = #{reserveEnsure.department}
+                and re.week = #{reserveEnsure.week}
+                and re.day = #{reserveEnsure.day}
+                and re.course = #{reserveEnsure.course}
+            )
+        and belong_department = #{reserveEnsure.department}
+        and seat_num >= #{reserveEnsure.trial_num} and can_use = true
+    </select>
+
+<!--    获取已经选过的课 -->
+    <select id="getHoldCourse" parameterType="com.example.labreservesystem.bean.po.ReserveEnsure" resultType="com.example.labreservesystem.bean.po.ReserveEnsure">
+        select * from reservelab_ensure where department = #{reserveEnsure.department}
+                and laboratory = #{reserveEnsure.laboratory} and week = #{reserveEnsure.week}
+    </select>
+</mapper>

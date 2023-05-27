@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<body>
+<div class="layui-container layui-col-lg-offset3" style="margin-top:30px ;">
+    <form class="layui-form" action="" lay-filter="tea_info">
+        <div class="layui-form-item">
+            <label class="layui-form-label">编号</label>
+            <div class="layui-input-block">
+                <input type="text" id="lab_id" name="lab_id" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">实验室</label>
+            <div class="layui-input-block">
+                <input type="text" id="lab_name" name="lab_name" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属学院</label>
+            <div class="layui-input-block">
+                <input type="text" id="belong_department" name="belong_department" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">座位数</label>
+            <div class="layui-input-block">
+                <input type="text" id="seat_num" name="seat_num" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">负责人编号</label>
+            <div class="layui-input-block">
+                <input type="text" id="lab_manager_id" name="lab_manager_id" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button TYPE="BUTTON" class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    //Demo
+    layui.use(['form','table','layer'], function(){
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        //监听提交
+
+        form.on('submit(formDemo)',function(data){
+            layer.confirm("是否更改？",{icon:3,title:"提示"},function(index){
+
+                $.get("http://localhost:8080/labManager/updateLab",
+                    {
+                        lab_id: $("#lab_id").val(),
+                        seat_num: $("#seat_num").val(),
+                        lab_name: $("#lab_name").val(),
+                        belong_department: $("#belong_department").val(),
+                        lab_manager_id: $("#lab_manager_id").val()
+                    },
+                    function(d){
+                        if(d.status == 0){//成功
+                            console.log(d);
+                            form.render("input","lab_info");
+                            parent.layer.msg("更新成功！", {icon: 1});
+                            var setTime = setTimeout(function () {}, 2000);
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                            layer.close(index);
+                        }
+                        else{
+                            parent.layer.msg(d.msg,{icon:2});
+                            console.msg(d.msg);
+                            layer.close();
+                        }
+                });
+            });
+            return false;
+        });
+    });
+</script>
+      

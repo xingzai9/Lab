@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加实验信息弹窗</title>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css">
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <script src="../../static/layui/layui.js"></script>
+</head>
+<body>
+
+
+<div class="layui-container layui-col-lg-offset3" style="margin-top: 30px" >
+    <form class="layui-form" action="">
+        <input type="hidden" id="trial_name" name="trial_name">
+        <input type="hidden" id="department" name="department">
+        <input type="hidden" id="laboratory" name="laboratory">
+        <input type="hidden" id="reserve_tea_id" name="reserve_tea_id">
+        <input type="hidden" id="week" name="week">
+        <input type="hidden" id="day" name="day">
+        <input type="hidden" id="course" name="course">
+        <div class="layui-form-item">
+            <label class="layui-form-label">实验人数</label>
+            <div class="layui-input-block">
+                <input id="trial_num" name="trial_num" type="text"  required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="add" class="layui-btn"  lay-submit lay-filter="add">选择实验室</button>
+<!--                <button id="finish"  class="layui-btn layui-btn-warm" lay-submit lay-filter="finish">提交申请</button>-->
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">推荐实验室</label>
+                <div class="layui-input-block">
+                    <select id="lab_name" name="lab_name">
+                        <!--<option value=""></option>
+                        <option value="0">计算机</option>
+                        <option value="1">机械</option>
+                        <option value="2">能动</option>
+                        <option value="3">经管</option>-->
+                    </select>
+                </div>
+        </div>
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">可容纳人数</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input id="seat_num" name="seat_num" type="text"  class="layui-input" disabled>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">座位数</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input id="seat_num" type="text" name="seat_num" required lay-verify="required" placeholder="请输入学号" autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">所属学院</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select id="belong_department" name="belong_department" lay-verify="required">-->
+<!--                    &lt;!&ndash;<option value=""></option>-->
+<!--                    <option value="0">计算机</option>-->
+<!--                    <option value="1">机械</option>-->
+<!--                    <option value="2">能动</option>-->
+<!--                    <option value="3">经管</option>&ndash;&gt;-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">实验室管理员编号</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select id="lab_manager_id" name="lab_manager_id" lay-verify="required">-->
+<!--                    &lt;!&ndash;<option value=""></option>-->
+<!--                    <option value="0">计算机</option>-->
+<!--                    <option value="1">机械</option>-->
+<!--                    <option value="2">能动</option>-->
+<!--                    <option value="3">经管</option>&ndash;&gt;-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+<!--                <button id="add" class="layui-btn"  lay-submit lay-filter="add">选择实验室</button>-->
+                <button id="finish"  class="layui-btn layui-btn-warm" lay-submit lay-filter="finish">提交申请</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    //Demo
+    layui.use(['form','laydate','layer'], function(){
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        //提交
+        form.on('select(lab_name)',function(data){
+            console.log("检测到select变化");
+            var lab_name = $("#lab_name").val();
+
+            // $('#lala').prop('disabled',true);
+
+
+        });
+        form.on('submit(finish)', function(data){
+            console.log(data.field);
+            //取消默认行为
+            $.getJSON("http://localhost:8080/tea/addReservePlan",
+                data.field,function(d1){
+                        $.getJSON("http://localhost:8080/tea/deleteReserveByTea",
+                        data.field
+                        ,function (d2){
+                            if(d1.status === 0 && d2.status === 0){
+                                // obj.del();
+                                parent.layer.msg("提交成功",{icon: 1});
+                            }
+                            else{
+                                parent.layer.msg("提交失败",{icon: 2});
+                            }
+                        })
+                    })
+            // obj.del();
+            parent.layer.msg("请求成功，等待审核",{icon: 1} );
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        })
+        form.on('submit(add)', function(data){
+            // console.log("data->",data.field);
+            //取消默认行为
+            $.getJSON("http://localhost:8080/tea/getRecommendLaboratory",data.field,function(d){
+                console.log("d-->>",d.data);
+                if(d.status == 1){
+                        parent.layer.msg("实验室推荐失败",{icon:2});
+                }
+                else{
+                    parent.layer.msg("请选择您的实验室",{icon:1});
+                    var list = d.data;
+                    var str = "";
+                    for(var i=0;i<list.length;i++){
+                        str += "<option value=\"" + list[i].lab_name+"\">" + list[i].lab_name +"（最多可容纳"+list[i].seat_num+"人）"+ "</option>";
+                    }
+
+                    $("#lab_name").html(str);
+                    form.render("select");
+                }
+                    // parent.layer.msg("添加成功！", {icon: 1});
+                    // var setTime = setTimeout(function () {}, 2000);
+                    // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    // parent.layer.close(index); //再执行关闭
+                })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

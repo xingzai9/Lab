@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//OTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.labreservesystem.mapper.ExcelMapper">
+    <!--批量导入学生信息-->
+    <insert id="insertStuExcelData">
+        insert into student_info(stu_num, stu_password, stu_gender, stu_name, stu_class, stu_department, e_mail) values
+        <foreach collection="list" separator="," item="item" >
+            (#{item.stu_num},#{item.stu_password},#{item.stu_gender},#{item.stu_name},#{item.stu_class},#{item.stu_department},#{item.e_mail})
+        </foreach>
+    </insert>
+
+    <!--批量导入教师信息-->
+    <insert id="insertTeaExcelData">
+        insert into teacher_info(tea_id, tea_name, tea_password, tea_gender, tea_department, e_mail) values
+        <foreach collection="list" separator="," item="item" >
+            (#{item.tea_id},#{item.tea_name},#{item.tea_password},#{item.tea_gender},#{item.tea_department},#{item.e_mail})
+        </foreach>
+    </insert>
+
+    <!--批量导入实验信息-->
+    <insert id="insertTrialExcelData">
+        insert into stu_tea_semester(stu_num, tea_id, semester, trial_name) values
+        <foreach collection="list" separator="," item="item" >
+            (#{item.stu_num},#{item.tea_id},#{item.semester},#{item.trial_name})
+        </foreach>
+    </insert>
+</mapper>

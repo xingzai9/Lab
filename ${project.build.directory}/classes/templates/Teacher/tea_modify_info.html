@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>课程管理系统-登录</title>
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+     <style type="text/css">
+    .layui-form-select {
+			width: 800px;
+			/*height:60px;*/
+	}
+	.layui-form-item .layui-input {
+    		width: 800px;
+	}
+    </style>  
+</head>
+<body>
+
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header layui-bg-cyan">
+        <div class="layui-logo layui-hide-xs layui-bg-cyan">实验室管理系统</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left layui-bg-cyan">
+            <!-- 移动端显示 -->
+            <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                <i class="layui-icon layui-icon-spread-left layui-bg-cyan"></i>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan layui-this">
+                <a href="#" th:href="@{/tea/toModifyInfo}">个人信息</a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan ">
+                <a href="#" th:href="@{/tea/toMyStudent}">我的学生</a>
+            </li>
+            <li class="layui-nav-item ">
+                <a  href="#" th:href="@{/tea/toReserve}">预约实验</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="#" th:href="@{/tea/toReserve}">初步预约信息</a></dd>
+                    <dd><a href="#" th:href="@{/tea/toReserveDetail}">具体时间选择</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-hide-xs layui-bg-cyan">
+                <a href="#" th:href="@{/tea/toMyMessage}">我的通知</a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right layui-bg-cyan">
+            <li  id="username" class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <!--                <a id="username" href="javascript:;" th:href="@{/stu/toModifyInfo}"></a>-->
+            </li>
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;" th:href="@{/logout}">
+                    退出
+                    <i class="layui-icon layui-icon-down layui-nav-more"></i>
+                </a>
+            </li>
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect="">
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-more-vertical"></i>
+                </a>
+            </li>
+            <span class="layui-nav-bar" style="left: 165.913px; width: 0px; opacity: 0; top: 56px;"></span></ul>
+    </div>
+
+    <div class="layui-side layui-bg-green">
+        <div class="layui-side-scroll layui-bg-green">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-bg-green" lay-filter="test">
+                <li class="layui-nav-item">
+<!--                    <a href="javascript:;">预约实验</a>-->
+<!--                    <dl class="layui-nav-child"> &lt;!&ndash; 二级菜单 &ndash;&gt;-->
+<!--                        <dd><a href="#" th:href="@{/tea/toReserve}">初步预约信息</a></dd>-->
+<!--                        <dd><a href="#" th:href="@{/tea/toReserveDetail}">具体时间选择</a></dd>-->
+<!--                    </dl>-->
+                </li>
+
+                <span class="layui-nav-bar"></span></ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <!--    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">-->
+        <!--      <legend>课程表</legend>-->
+        <!--    </fieldset>-->
+        <div class="layui-container" style="margin-top: 30px" align="left" >
+           	<h1>个人信息维护</h1>
+          </div>
+        <div class="layui-row " align="left">
+        	<div class="layui-container " style="margin-top:60px ;" >
+		<form  align="left" class="layui-form" action="" lay-filter="tea_info">
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">工号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="tea_num" name="tea_num" class="layui-input" disabled>
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="tea_name" name="tea_name" class="layui-input">
+		    </div>
+		  </div>
+		 
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">学院</label>
+              <div class="layui-input-block">
+                  <select id="department" name="department" lay-verify="required">
+                      <!--<option value=""></option>
+                      <option value="0">计算机</option>
+                      <option value="1">机械</option>
+                      <option value="2">能动</option>
+                      <option value="3">经管</option>-->
+                  </select>
+              </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">邮箱号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="e_mail" name="e_mail" class="layui-input">
+		    </div>
+		  </div>
+		  
+		<div class="layui-form-item">
+	    	<label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="text" id="tea_gender" name="tea_gender" class="layui-input">
+            </div>
+    	</div>
+        	
+		  <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button TYPE="BUTTON" class="layui-btn" lay-submit lay-filter="formDemo">确认修改</button>
+		    </div>
+		  </div>
+		</form>
+	</div>
+
+</div>
+    </div>
+</div>
+<!--课程表-->
+<script>
+//Demo
+		layui.use(['form','table','layer'], function(){
+			  var form = layui.form;
+			  var table = layui.table;
+			  var layer = layui.layer;
+			  var $ = layui.jquery;
+			  //监听提交
+              $.getJSON("http://localhost:8080/tea/getSession",function(d){
+                    console.log("session"+d.data)
+                    var username = d.data
+                    var str = "<a href='/tea/toModifyInfo' >欢迎教师用户" + username + "</a>";
+                    $('#username').html(str);
+                          $.getJSON("http://localhost:8080/labManager/getTeacherById",{tea_id:username},function(d){
+                              console.log("d是什么",d);
+                              $("#tea_num").val(d.data.tea_id);
+                              $("#tea_name").val(d.data.tea_name);
+                              $("#department").val(d.data.tea_department);
+                              $("#e_mail").val(d.data.e_mail);
+                              $("#tea_gender").val(d.data.tea_gender==true?'男':'女')
+                  })
+            })
+
+            $.getJSON("http://localhost:8080/getDepartmentList",function(d){
+                //返回错误
+
+                if(d.status == 1){
+                    layer.msg(d.msg);
+                }
+                //返回正确码
+                else{
+                    var list = d.data;
+                    // var str = "<option value=''></option>";
+                    var stu_dept=$("#stu_dept").val();
+                    var str = ""
+                    console.log("stu_dept",JSON.stringify(stu_dept));
+                    for(var i=0;i<list.length;i++){
+                        console.log("list[i]",list[i]);
+
+                        if($("#stu_dept").val()==list[i])
+                            str += "<option selected value=\"" + list[i]+"\">" + list[i] + "</option>";
+                        else
+                            str += "<option value=\"" + list[i]+"\">" + list[i] + "</option>";
+                    }
+
+                    $("#department").html(str);
+                    form.render("select");
+                }
+            })
+		  form.on('submit(formDemo)',function(data){
+		  	layer.confirm("是否更改？",{icon:3,title:"提示"},function(index){
+
+		  		console.log("data",data);
+				$.get("http://localhost:8080/labManager/updateTeacher",
+                    {
+                        id:null,
+                        tea_name:data.field.tea_name,
+                        tea_id:data.field.tea_num,
+                        department:data.field.tea_department,
+                        gender:data.field.tea_gender=='男'?true:false,
+                        e_mail:data.field.e_mail
+                    },
+                    function(d){
+                        if(d.status == 0){//成功
+                            console.log(d,"成功");
+                            form.render("input","tea_info");
+                            layer.close(index);
+                        }
+                        else{
+                            console.msg(d.msg);
+                            layer.close();
+                        }
+				    });
+	  			});
+	  			return false;
+		  });
+		});
+</script>
+
+</body>
+</html>

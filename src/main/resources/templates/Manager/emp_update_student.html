@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>更新学生</title>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css">
+    <!--引入jquery-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+    <script rel="stylesheet" type="text/javascript" src="../js/jquery-3.4.1.js"></script>
+    <!--动态-->
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <!--静态调试-->
+    <link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../static/css/login.css">
+
+</head>
+<body>
+
+
+<div class="layui-container layui-col-lg-offset3" style="margin-top: 10px" >
+<form class="layui-form">
+	<input type="hidden" id="id" name="id">
+    <input type="hidden" id="stu_dept" name="stu_dept"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <input id="stu_name" type="text" name="stu_name" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">学号</label>
+        <div class="layui-input-block">
+            <input id="stu_num" type="text" name="stu_num" required lay-verify="required" placeholder="请输入学号" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">学院</label>
+        <div class="layui-input-block">
+            <select id="department" name="department" lay-verify="required">
+                <!--<option value=""></option>
+                <option value="0">计算机</option>
+                <option value="1">机械</option>
+                <option value="2">能动</option>
+                <option value="3">经管</option>-->
+            </select>
+        </div>
+    </div>
+     <div class="layui-form-item">
+        <label class="layui-form-label">班级</label>
+        <div class="layui-input-block">
+            <input id="stu_class" type="text" name="stu_class"  placeholder="请输入班级号" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">单选框</label>
+        <div class="layui-input-block">
+            <input type="radio" name="gender" value="true" title="男" >
+            <input type="radio" name="gender" value="false" title="女" checked>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button id="submit" class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+        </div>
+    </div>
+</form>
+</div>
+<script>
+    //Demo
+    layui.use(['form','laydate','layer'], function(){
+        var form = layui.form;
+		var laydate = layui.laydate;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+		laydate.render({
+			elem:"#Date",
+			triger:"click"
+		})
+		$.getJSON("http://localhost:8080/getDepartmentList",function(d){
+			//返回错误
+
+			if(d.status == 1){
+				layer.msg(d.msg);
+			}
+			//返回正确码
+			else{
+				var list = d.data;
+				var str = "<option value=''></option>";
+				var stu_dept=$("#stu_dept").val();
+				console.log("stu_dept",JSON.stringify(stu_dept));
+				for(var i=0;i<list.length;i++){
+					console.log("list[i]",list[i]);
+					
+					if($("#stu_dept").val()==list[i])
+						str += "<option selected value=\"" + list[i]+"\">" + list[i] + "</option>";
+					else
+						str += "<option value=\"" + list[i]+"\">" + list[i] + "</option>";
+				}
+
+				$("#department").html(str);
+				form.render("select");
+			}
+		})
+        //提交
+        form.on('submit(add)', function(data){
+        	//取消默认行为
+        	$.getJSON("http://localhost:8080/labManager/updateStudent",data.field,function(d){
+				//错误码
+
+        		if(d.status == 1){
+					parent.layer.msg('出错了，请重新填写',{icon:2});
+        		}
+        		else{
+        			//假设这是iframe页
+                    parent.layer.msg("更新成功",{icon:1});
+					var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+					parent.layer.close(index); //再执行关闭 
+        		}
+        	})
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
